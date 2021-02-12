@@ -95,20 +95,31 @@ describe("VtProgressBar", () => {
     expect(wrapper.classes()).toContain(`${VT_NAMESPACE}__progress-bar`)
     expect(wrapper.element).toMatchSnapshot()
   })
-  it("emits close-toast on animationend", async () => {
-    const wrapper = mount(VtProgressBar)
+  it("emits close-toast on timer end", async () => {
+    const wrapper = mount(VtProgressBar, {
+      props: {
+        timeout: 1000,
+      },
+    })
     expect(wrapper.emitted("close-toast")).toBeFalsy()
-    wrapper.trigger("animationend")
-    expect(wrapper.emitted("close-toast")).toBeTruthy()
+    setTimeout(() => {
+      expect(wrapper.emitted("close-toast")).toBeTruthy()
+    }, 2000)
   })
-  it("removes listener on beforeDestroy", async () => {
-    const wrapper = mount(VtProgressBar)
-    const spyRemoveEventListener = jest.spyOn(
-      wrapper.vm.$el,
-      "removeEventListener"
-    )
-    expect(spyRemoveEventListener).not.toHaveBeenCalled()
-    wrapper.unmount()
-    expect(spyRemoveEventListener).toHaveBeenCalled()
-  })
+  //it("emits close-toast on animationend", async () => {
+  //   const wrapper = mount(VtProgressBar)
+  //   expect(wrapper.emitted("close-toast")).toBeFalsy()
+  //   wrapper.trigger("animationend")
+  //   expect(wrapper.emitted("close-toast")).toBeTruthy()
+  // })
+  // it("removes listener on beforeDestroy", async () => {
+  //   const wrapper = mount(VtProgressBar)
+  //   const spyRemoveEventListener = jest.spyOn(
+  //     wrapper.vm.$el,
+  //     "removeEventListener"
+  //   )
+  //   expect(spyRemoveEventListener).not.toHaveBeenCalled()
+  //   wrapper.unmount()
+  //   expect(spyRemoveEventListener).toHaveBeenCalled()
+  // })
 })
