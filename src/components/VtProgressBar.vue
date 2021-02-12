@@ -15,12 +15,14 @@ export default defineComponent({
 
   // TODO: The typescript compiler is not playing nice with emit types
   // Rollback this change once ts is able to infer emit types
-  // emits: ["close-toast"],
+  emits: ["close-toast"],
 
   data() {
     return {
       nsExtension: "",
       hasClass: true,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      timeoutRef: null as any,
     }
   },
 
@@ -47,24 +49,21 @@ export default defineComponent({
   watch: {
     timeout() {
       this.hasClass = false
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       this.$nextTick(() => (this.hasClass = true))
     },
   },
 
   mounted() {
-    this.$el.addEventListener("animationend", this.animationEnded)
+    if (this.timeout)
+      this.timeoutRef = setTimeout(() => {
+        this.$emit("close-toast")
+      }, this.timeout)
   },
 
   beforeUnmount() {
-    this.$el.removeEventListener("animationend", this.animationEnded)
-  },
-
-  methods: {
-    animationEnded() {
-      // See TODO on line 16
-      // eslint-disable-next-line vue/require-explicit-emits
-      this.$emit("close-toast")
-    },
+    if (this.timeout && this.timeoutRef) clearTimeout(this.timeoutRef)
   },
 })
 </script>
